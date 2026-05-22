@@ -137,19 +137,60 @@
   <!-- CART DRAWER -->
   <div id="cart-overlay" onclick="closeCart()"></div>
   <div id="cart-drawer">
-    <div class="cart-header">
-      <h3>Your Cart</h3>
-      <button class="cart-header-close" onclick="closeCart()">&times;</button>
-    </div>
-    <div id="cart-items"></div>
-    <div class="cart-footer">
-      <div class="cart-total-row">
-        <span>Total</span>
-        <span id="cart-total">$0.00</span>
+
+    <!-- STEP 1: Cart items -->
+    <div id="cart-step-1">
+      <div class="cart-header">
+        <h3>Your Cart</h3>
+        <button class="cart-header-close" onclick="closeCart()">&times;</button>
       </div>
-      <button class="btn-checkout">Proceed to Checkout</button>
-      <p class="cart-note">Secure payment coming soon — we'll be in touch to confirm your order.</p>
+      <div id="cart-items"></div>
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span>Total</span>
+          <span id="cart-total">$0.00</span>
+        </div>
+        <button class="btn-checkout" onclick="showCheckoutStep()">Proceed to Checkout</button>
+        <p class="cart-note">Free shipping within Cyprus · Worldwide shipping available</p>
+      </div>
     </div>
+
+    <!-- STEP 2: Checkout form -->
+    <div id="cart-step-2" style="display:none;">
+      <div class="checkout-header">
+        <button class="checkout-back-btn" onclick="showCartStep()">&#8592;</button>
+        <h3>Delivery Details</h3>
+      </div>
+      <div class="checkout-body">
+        <div id="checkout-summary"></div>
+        <form id="checkout-form">
+          <div class="checkout-form-row">
+            <div class="checkout-field">
+              <label for="co-first-name">First name</label>
+              <input type="text" id="co-first-name" name="first-name" placeholder="Jane" required>
+            </div>
+            <div class="checkout-field">
+              <label for="co-last-name">Last name</label>
+              <input type="text" id="co-last-name" name="last-name" placeholder="Smith" required>
+            </div>
+          </div>
+          <div class="checkout-field">
+            <label for="co-email">Email address</label>
+            <input type="email" id="co-email" name="email" placeholder="jane@example.com" required>
+          </div>
+          <div class="checkout-field">
+            <label for="co-phone">Phone number</label>
+            <input type="tel" id="co-phone" name="phone" placeholder="+357 99 000 000">
+          </div>
+          <div class="checkout-field">
+            <label for="co-address">Delivery address</label>
+            <textarea id="co-address" name="address" placeholder="Street, city, postal code, country" required></textarea>
+          </div>
+          <button type="submit" class="checkout-submit">Place Order</button>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <!-- LIGHTBOX -->

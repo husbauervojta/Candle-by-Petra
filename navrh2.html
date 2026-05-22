@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Návrh 2 — Candles by Petra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a96e;
+      --dark: #1a1a18;
+      --white: #ffffff;
+      --grey: #7a7a72;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      cursor: none;
+    }
+
+    /* ── CURSOR ── */
+    #cur  { position:fixed; width:8px; height:8px; background:var(--gold); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .25s,height .25s; }
+    #curR { position:fixed; width:32px; height:32px; border:1px solid var(--gold); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); opacity:.45; transition:width .25s,height .25s,opacity .25s; }
+    body.h #cur  { width:14px; height:14px; }
+    body.h #curR { width:50px; height:50px; opacity:.2; }
+
+    /* ── DEMO TAG ── */
+    .demo-tag {
+      position:fixed; top:1rem; right:1.5rem; z-index:500;
+      background:var(--gold); color:#fff;
+      font-size:.6rem; letter-spacing:.15em; text-transform:uppercase;
+      padding:.35rem .8rem; border-radius:2px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.9rem 3.5rem;
+      transition: background .6s, border-color .6s;
+    }
+    nav.light { background:rgba(255,255,255,.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,.07); }
+    nav.dark  { background:rgba(26,26,24,.7); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,.08); }
+
+    .nav-logo img { height:64px; width:auto; object-fit:contain; }
+    .nav-logo-text { font-family:'Cormorant Garamond',serif; font-size:1.3rem; letter-spacing:.04em; }
+
+    .nav-links { display:flex; gap:2.5rem; list-style:none; }
+    .nav-links a { font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; transition:color .3s; text-decoration:none; }
+    nav.light .nav-links a { color:#7a7a72; }
+    nav.light .nav-links a:hover { color:#1a1a18; }
+    nav.dark  .nav-links a { color:rgba(255,255,255,.6); }
+    nav.dark  .nav-links a:hover { color:#fff; }
+
+    /* ── SLIDES WRAPPER ── */
+    #slides {
+      display:flex;
+      width:100%; height:100vh;
+      transition: transform .9s cubic-bezier(.77,0,.175,1);
+      will-change: transform;
+    }
+
+    /* ── SINGLE SLIDE ── */
+    .slide {
+      position:relative;
+      min-width:100vw; height:100vh;
+      display:flex;
+      overflow:hidden;
+    }
+
+    /* BG color per slide */
+    .slide-bg {
+      position:absolute; inset:0;
+      transition:opacity 1s;
+    }
+
+    /* ── LEFT PANEL — image ── */
+    .slide-img {
+      position:relative;
+      width:52%;
+      display:flex; align-items:center; justify-content:center;
+      padding:5rem 3rem 5rem 4rem;
+      overflow:hidden;
+    }
+
+    .slide-img-inner {
+      position:relative;
+      height:78vh;
+      max-width:420px;
+      width:100%;
+    }
+
+    .slide-img-inner img {
+      width:100%; height:100%;
+      object-fit:cover;
+      border-radius:3px;
+      transition:transform 1.2s cubic-bezier(.22,1,.36,1);
+      display:block;
+    }
+
+    .slide.active .slide-img-inner img { transform:scale(1.0); }
+    .slide:not(.active) .slide-img-inner img { transform:scale(1.06); }
+
+    /* Soft shadow under image */
+    .slide-img-inner::after {
+      content:'';
+      position:absolute;
+      bottom:-20px; left:10%; right:10%;
+      height:40px;
+      background:rgba(0,0,0,.12);
+      filter:blur(16px);
+      border-radius:50%;
+    }
+
+    /* Big decorative number */
+    .slide-number-big {
+      position:absolute;
+      bottom:2.5rem; left:3.5rem;
+      font-family:'Cormorant Garamond',serif;
+      font-size:9rem;
+      font-weight:300;
+      line-height:1;
+      opacity:.08;
+      pointer-events:none;
+      transition:color .6s;
+    }
+
+    /* ── RIGHT PANEL — content ── */
+    .slide-content {
+      width:48%;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding:6rem 4rem 5rem 3rem;
+    }
+
+    /* Cyprus origin tag */
+    .origin-tag {
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      margin-bottom:2rem;
+      opacity:0;
+      transform:translateY(16px);
+      transition:opacity .7s .1s ease, transform .7s .1s ease;
+    }
+    .slide.active .origin-tag { opacity:1; transform:translateY(0); }
+
+    .origin-pin {
+      width:20px; height:20px;
+      flex-shrink:0;
+    }
+
+    .origin-text {
+      font-size:.68rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+
+    /* Cyprus map watermark */
+    .cyprus-map {
+      position:absolute;
+      bottom:2.5rem; right:3rem;
+      opacity:.08;
+      width:120px;
+      pointer-events:none;
+      transition:opacity .6s;
+    }
+    .slide:hover .cyprus-map { opacity:.14; }
+
+    /* Candle name */
+    .slide-label {
+      font-size:.7rem;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--gold);
+      margin-bottom:.75rem;
+      opacity:0;
+      transform:translateY(20px);
+      transition:opacity .7s .2s ease, transform .7s .2s ease;
+    }
+    .slide.active .slide-label { opacity:1; transform:translateY(0); }
+
+    .slide-name {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.4rem,4vw,3.8rem);
+      font-weight:400;
+      line-height:1.1;
+      margin-bottom:1rem;
+      opacity:0;
+      transform:translateY(24px);
+      transition:opacity .8s .3s ease, transform .8s .3s ease;
+    }
+    .slide.active .slide-name { opacity:1; transform:translateY(0); }
+
+    .slide-name em { font-style:italic; }
+
+    .slide-scent {
+      font-size:.95rem;
+      line-height:1.65;
+      margin-bottom:.75rem;
+      max-width:340px;
+      opacity:0;
+      transform:translateY(20px);
+      transition:opacity .7s .4s ease, transform .7s .4s ease;
+    }
+    .slide.active .slide-scent { opacity:1; transform:translateY(0); }
+
+    .slide-story {
+      font-size:.85rem;
+      line-height:1.7;
+      max-width:320px;
+      margin-bottom:2rem;
+      opacity:0;
+      transform:translateY(20px);
+      transition:opacity .7s .5s ease, transform .7s .5s ease;
+    }
+    .slide.active .slide-story { opacity:1; transform:translateY(0); }
+
+    .slide-price {
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.6rem;
+      margin-bottom:1.75rem;
+      opacity:0;
+      transform:translateY(16px);
+      transition:opacity .7s .55s ease, transform .7s .55s ease;
+    }
+    .slide.active .slide-price { opacity:1; transform:translateY(0); }
+
+    .slide-actions {
+      display:flex; gap:1rem; align-items:center;
+      opacity:0;
+      transform:translateY(16px);
+      transition:opacity .7s .65s ease, transform .7s .65s ease;
+    }
+    .slide.active .slide-actions { opacity:1; transform:translateY(0); }
+
+    .btn-add {
+      display:inline-block;
+      padding:.85rem 2.2rem;
+      font-family:'Jost',sans-serif;
+      font-size:.72rem;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      border:none;
+      cursor:none;
+      transition:background .3s, transform .2s, color .3s;
+    }
+    .btn-add:hover { transform:translateY(-2px); }
+
+    .btn-add-dark { background:var(--dark); color:#fff; }
+    .btn-add-dark:hover { background:var(--gold); }
+
+    .btn-add-outline {
+      background:transparent;
+      color:var(--dark);
+      border:1px solid currentColor;
+    }
+    .btn-add-outline:hover { background:var(--dark); color:#fff; border-color:var(--dark); }
+
+    /* ── NAVIGATION DOTS ── */
+    #dots {
+      position:fixed;
+      bottom:2.2rem;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex; gap:.7rem;
+      z-index:300;
+    }
+
+    .dot {
+      width:6px; height:6px;
+      border-radius:50%;
+      background:rgba(0,0,0,.2);
+      cursor:none;
+      transition:background .4s, transform .4s, width .4s;
+    }
+    .dot.active { background:var(--gold); width:22px; border-radius:3px; }
+
+    /* ── ARROWS ── */
+    .arrow {
+      position:fixed;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:300;
+      background:rgba(255,255,255,.75);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(0,0,0,.08);
+      width:48px; height:48px;
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      cursor:none;
+      transition:background .3s, transform .3s, opacity .3s;
+      box-shadow:0 4px 16px rgba(0,0,0,.08);
+    }
+    .arrow:hover { background:#fff; transform:translateY(-50%) scale(1.08); }
+    .arrow svg { width:18px; height:18px; stroke:var(--dark); fill:none; stroke-width:1.5; }
+    #arrow-prev { left:1.5rem; }
+    #arrow-next { right:1.5rem; }
+    .arrow.hidden { opacity:0; pointer-events:none; }
+
+    /* ── PROGRESS BAR ── */
+    #progress {
+      position:fixed;
+      top:0; left:0;
+      height:2px;
+      background:var(--gold);
+      z-index:400;
+      transition:width .9s cubic-bezier(.77,0,.175,1);
+    }
+
+    /* counter */
+    #counter {
+      position:fixed;
+      bottom:2rem; right:3rem;
+      font-family:'Cormorant Garamond',serif;
+      font-size:1rem;
+      z-index:300;
+      color:rgba(0,0,0,.3);
+      letter-spacing:.05em;
+    }
+
+    /* ── SLIDE THEMES ── */
+    /* matcha */
+    .slide[data-theme="matcha"] { background:#eef5eb; }
+    .slide[data-theme="matcha"] .slide-number-big,
+    .slide[data-theme="matcha"] .btn-add-outline { color:#1a1a18; }
+
+    /* coffee */
+    .slide[data-theme="coffee"] { background:#f5ede0; }
+
+    /* berry */
+    .slide[data-theme="berry"]  { background:#f5e8ee; }
+
+    /* cherry */
+    .slide[data-theme="cherry"] { background:#f7edeb; }
+
+    /* lavender */
+    .slide[data-theme="lavender"] { background:#eeebf5; }
+
+    /* citrus */
+    .slide[data-theme="citrus"] { background:#f5f0db; }
+
+    /* ── GRAIN ── */
+    body::after {
+      content:'';
+      position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events:none;
+      z-index:9996;
+      opacity:.5;
+    }
+
+    a { text-decoration:none; color:inherit; }
+
+  </style>
+</head>
+<body>
+
+  <div id="cur"></div>
+  <div id="curR"></div>
+  <div class="demo-tag">Návrh 2 — neaplikováno</div>
+  <div id="progress"></div>
+
+  <!-- NAV -->
+  <nav class="light" id="main-nav">
+    <a class="nav-logo" href="#">
+      <img src="images/logo.jpeg" alt="Candles by Petra"
+           onerror="this.outerHTML='<span class=nav-logo-text>Candles by Petra</span>'">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Shop</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- SLIDES -->
+  <div id="slides">
+
+    <!-- 01 MATCHA -->
+    <div class="slide active" data-theme="matcha" data-idx="0">
+      <div class="slide-img">
+        <div class="slide-img-inner">
+          <img src="images/matcha.jpeg" alt="Matcha Candle"
+               onerror="this.style.cssText='background:#c8e0c0;width:100%;height:100%;display:block'">
+        </div>
+        <span class="slide-number-big">01</span>
+      </div>
+
+      <div class="slide-content">
+        <div class="origin-tag">
+          <svg class="origin-pin" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+          </svg>
+          <span class="origin-text" style="color:#7a9e6e">Tea gardens of Troodos, Cyprus</span>
+        </div>
+        <span class="slide-label">The Collection — 01 / 06</span>
+        <h2 class="slide-name">Matcha<br><em>Candle</em></h2>
+        <p class="slide-scent" style="color:#7a7a72">Just Green! — earthy, fresh, grounding</p>
+        <p class="slide-story" style="color:#9a9a90">High in the Troodos mountains, morning mist settles over cedar and pine. This candle brings that cool, green stillness into your home.</p>
+        <p class="slide-price" style="color:#1a1a18">$15.57</p>
+        <div class="slide-actions">
+          <button class="btn-add btn-add-dark">Add to Cart</button>
+          <button class="btn-add btn-add-outline">View details</button>
+        </div>
+      </div>
+
+      <!-- Cyprus map -->
+      <svg class="cyprus-map" viewBox="0 0 200 120" fill="none">
+        <path d="M20,65 C22,55 30,42 45,36 C58,30 72,28 85,30 C100,32 112,28 125,32 C138,36 148,32 158,36 C168,40 165,50 155,56 C165,58 170,66 160,74 C148,82 128,88 105,86 C82,88 55,84 38,76 C28,72 18,75 20,65 Z M155,36 C162,30 175,26 182,32 C188,36 185,46 178,48 C170,50 158,46 155,36 Z" fill="#c9a96e"/>
+        <circle cx="72" cy="58" r="4" fill="#7a9e6e"/>
+      </svg>
+    </div>
+
+    <!-- 02 COFFEE -->
+    <div class="slide" data-theme="coffee" data-idx="1">
+      <div class="slide-img">
+        <div class="slide-img-inner">
+          <img src="images/Teddy cappuccino.jpeg" alt="Design Coffee Soy Candle"
+               onerror="this.style.cssText='background:#d4b896;width:100%;height:100%;display:block'">
+        </div>
+        <span class="slide-number-big">02</span>
+      </div>
+
+      <div class="slide-content">
+        <div class="origin-tag">
+          <svg class="origin-pin" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+          </svg>
+          <span class="origin-text" style="color:#9a7558">Morning light in a Limassol café</span>
+        </div>
+        <span class="slide-label">The Collection — 02 / 06</span>
+        <h2 class="slide-name">Design Coffee<br><em>Soy Candle</em></h2>
+        <p class="slide-scent" style="color:#7a7a72">Teddy Cappuccino — warm, roasted, comforting</p>
+        <p class="slide-story" style="color:#9a9a90">The slow Saturday mornings of old Limassol. Sunlight through shutters, the smell of fresh coffee, nowhere to be. This candle is that feeling.</p>
+        <p class="slide-price" style="color:#1a1a18">$19.42</p>
+        <div class="slide-actions">
+          <button class="btn-add btn-add-dark">Add to Cart</button>
+          <button class="btn-add btn-add-outline">View details</button>
+        </div>
+      </div>
+
+      <svg class="cyprus-map" viewBox="0 0 200 120" fill="none">
+        <path d="M20,65 C22,55 30,42 45,36 C58,30 72,28 85,30 C100,32 112,28 125,32 C138,36 148,32 158,36 C168,40 165,50 155,56 C165,58 170,66 160,74 C148,82 128,88 105,86 C82,88 55,84 38,76 C28,72 18,75 20,65 Z M155,36 C162,30 175,26 182,32 C188,36 185,46 178,48 C170,50 158,46 155,36 Z" fill="#c9a96e"/>
+        <circle cx="100" cy="65" r="4" fill="#9a7558"/>
+      </svg>
+    </div>
+
+    <!-- 03 BERRY -->
+    <div class="slide" data-theme="berry" data-idx="2">
+      <div class="slide-img">
+        <div class="slide-img-inner">
+          <img src="images/Teddy Berry.jpeg" alt="Teddy Berry"
+               onerror="this.style.cssText='background:#d4a0b0;width:100%;height:100%;display:block'">
+        </div>
+        <span class="slide-number-big">03</span>
+      </div>
+
+      <div class="slide-content">
+        <div class="origin-tag">
+          <svg class="origin-pin" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+          </svg>
+          <span class="origin-text" style="color:#9e6878">Wild berries of the Akamas peninsula</span>
+        </div>
+        <span class="slide-label">The Collection — 03 / 06</span>
+        <h2 class="slide-name">Teddy<br><em>Berry</em></h2>
+        <p class="slide-scent" style="color:#7a7a72">Design Soya Wax — sweet, wild, playful</p>
+        <p class="slide-story" style="color:#9a9a90">On the wild western tip of Cyprus, where the road ends and the coast takes over. Sun-warmed berries, sea breeze, and the freedom of having no plan.</p>
+        <p class="slide-price" style="color:#1a1a18">$19.42</p>
+        <div class="slide-actions">
+          <button class="btn-add btn-add-dark">Add to Cart</button>
+          <button class="btn-add btn-add-outline">View details</button>
+        </div>
+      </div>
+
+      <svg class="cyprus-map" viewBox="0 0 200 120" fill="none">
+        <path d="M20,65 C22,55 30,42 45,36 C58,30 72,28 85,30 C100,32 112,28 125,32 C138,36 148,32 158,36 C168,40 165,50 155,56 C165,58 170,66 160,74 C148,82 128,88 105,86 C82,88 55,84 38,76 C28,72 18,75 20,65 Z M155,36 C162,30 175,26 182,32 C188,36 185,46 178,48 C170,50 158,46 155,36 Z" fill="#c9a96e"/>
+        <circle cx="28" cy="62" r="4" fill="#9e6878"/>
+      </svg>
+    </div>
+
+    <!-- 04 CHERRY -->
+    <div class="slide" data-theme="cherry" data-idx="3">
+      <div class="slide-img">
+        <div class="slide-img-inner">
+          <img src="images/Cherry Kiss-web photo.jpeg" alt="Cherry Kiss"
+               onerror="this.style.cssText='background:#e0b0a0;width:100%;height:100%;display:block'">
+        </div>
+        <span class="slide-number-big">04</span>
+      </div>
+
+      <div class="slide-content">
+        <div class="origin-tag">
+          <svg class="origin-pin" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+          </svg>
+          <span class="origin-text" style="color:#c07878">Cherry blossoms of the Troodos foothills</span>
+        </div>
+        <span class="slide-label">The Collection — 04 / 06</span>
+        <h2 class="slide-name">Cherry<br><em>Kiss</em></h2>
+        <p class="slide-scent" style="color:#7a7a72">Scented Soy Wax · Floral Topper · Hand Poured · 170g</p>
+        <p class="slide-story" style="color:#9a9a90">Spring in the Troodos foothills — the brief moment when cherry trees bloom before the heat arrives. Delicate, fleeting, unforgettable.</p>
+        <p class="slide-price" style="color:#1a1a18">$18.20</p>
+        <div class="slide-actions">
+          <button class="btn-add btn-add-dark">Add to Cart</button>
+          <button class="btn-add btn-add-outline">View details</button>
+        </div>
+      </div>
+
+      <svg class="cyprus-map" viewBox="0 0 200 120" fill="none">
+        <path d="M20,65 C22,55 30,42 45,36 C58,30 72,28 85,30 C100,32 112,28 125,32 C138,36 148,32 158,36 C168,40 165,50 155,56 C165,58 170,66 160,74 C148,82 128,88 105,86 C82,88 55,84 38,76 C28,72 18,75 20,65 Z M155,36 C162,30 175,26 182,32 C188,36 185,46 178,48 C170,50 158,46 155,36 Z" fill="#c9a96e"/>
+        <circle cx="88" cy="52" r="4" fill="#c07878"/>
+      </svg>
+    </div>
+
+    <!-- 05 LAVENDER -->
+    <div class="slide" data-theme="lavender" data-idx="4">
+      <div class="slide-img">
+        <div class="slide-img-inner">
+          <img src="images/levander.jpeg" alt="Lavender Soy Candle"
+               onerror="this.style.cssText='background:#c8b8d8;width:100%;height:100%;display:block'">
+        </div>
+        <span class="slide-number-big">05</span>
+      </div>
+
+      <div class="slide-content">
+        <div class="origin-tag">
+          <svg class="origin-pin" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+          </svg>
+          <span class="origin-text" style="color:#8878a8">Lavender fields above Platres village</span>
+        </div>
+        <span class="slide-label">The Collection — 05 / 06</span>
+        <h2 class="slide-name">Lavender<br><em>Soy Candle</em></h2>
+        <p class="slide-scent" style="color:#7a7a72">Handmade Floral — calm, pure, timeless</p>
+        <p class="slide-story" style="color:#9a9a90">Above the village of Platres, where the air smells different. Cooler. Purple. This is the scent of the mountains at dusk, before the stars appear.</p>
+        <p class="slide-price" style="color:#1a1a18">$18.20</p>
+        <div class="slide-actions">
+          <button class="btn-add btn-add-dark">Add to Cart</button>
+          <button class="btn-add btn-add-outline">View details</button>
+        </div>
+      </div>
+
+      <svg class="cyprus-map" viewBox="0 0 200 120" fill="none">
+        <path d="M20,65 C22,55 30,42 45,36 C58,30 72,28 85,30 C100,32 112,28 125,32 C138,36 148,32 158,36 C168,40 165,50 155,56 C165,58 170,66 160,74 C148,82 128,88 105,86 C82,88 55,84 38,76 C28,72 18,75 20,65 Z M155,36 C162,30 175,26 182,32 C188,36 185,46 178,48 C170,50 158,46 155,36 Z" fill="#c9a96e"/>
+        <circle cx="80" cy="60" r="4" fill="#8878a8"/>
+      </svg>
+    </div>
+
+    <!-- 06 CITRUS -->
+    <div class="slide" data-theme="citrus" data-idx="5">
+      <div class="slide-img">
+        <div class="slide-img-inner">
+          <img src="images/citrus bloom.jpeg" alt="Citrus Bloom Gardenia"
+               onerror="this.style.cssText='background:#e8d890;width:100%;height:100%;display:block'">
+        </div>
+        <span class="slide-number-big">06</span>
+      </div>
+
+      <div class="slide-content">
+        <div class="origin-tag">
+          <svg class="origin-pin" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+          </svg>
+          <span class="origin-text" style="color:#c8a030">Citrus groves of the Mesaoria plain</span>
+        </div>
+        <span class="slide-label">The Collection — 06 / 06</span>
+        <h2 class="slide-name">Citrus Bloom<br><em>Gardenia</em></h2>
+        <p class="slide-scent" style="color:#7a7a72">Grapefruit · Gardenia · Hand-Poured Floral</p>
+        <p class="slide-story" style="color:#9a9a90">The flat plains of Cyprus in early morning, orange trees as far as you can see, white blossoms just opening. Sharp, bright, alive — like the first breath of a new day.</p>
+        <p class="slide-price" style="color:#1a1a18">$13.35</p>
+        <div class="slide-actions">
+          <button class="btn-add btn-add-dark">Add to Cart</button>
+          <button class="btn-add btn-add-outline">View details</button>
+        </div>
+      </div>
+
+      <svg class="cyprus-map" viewBox="0 0 200 120" fill="none">
+        <path d="M20,65 C22,55 30,42 45,36 C58,30 72,28 85,30 C100,32 112,28 125,32 C138,36 148,32 158,36 C168,40 165,50 155,56 C165,58 170,66 160,74 C148,82 128,88 105,86 C82,88 55,84 38,76 C28,72 18,75 20,65 Z M155,36 C162,30 175,26 182,32 C188,36 185,46 178,48 C170,50 158,46 155,36 Z" fill="#c9a96e"/>
+        <circle cx="110" cy="60" r="4" fill="#c8a030"/>
+      </svg>
+    </div>
+
+  </div><!-- /slides -->
+
+  <!-- ARROWS -->
+  <button class="arrow hidden" id="arrow-prev">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+  </button>
+  <button class="arrow" id="arrow-next">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+  </button>
+
+  <!-- DOTS -->
+  <div id="dots"></div>
+
+  <!-- COUNTER -->
+  <div id="counter">01 / 06</div>
+
+  <script>
+    const TOTAL = 6;
+    let current = 0;
+    let animating = false;
+
+    /* ── Cursor ── */
+    const cur = document.getElementById('cur');
+    const curR = document.getElementById('curR');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cur.style.left = mx+'px'; cur.style.top = my+'px';
+    });
+    (function raf(){ rx+=(mx-rx)*.1; ry+=(my-ry)*.1; curR.style.left=rx+'px'; curR.style.top=ry+'px'; requestAnimationFrame(raf); })();
+    document.querySelectorAll('button,a,.dot').forEach(el=>{
+      el.addEventListener('mouseenter',()=>document.body.classList.add('h'));
+      el.addEventListener('mouseleave',()=>document.body.classList.remove('h'));
+    });
+
+    /* ── Dots ── */
+    const dotsEl = document.getElementById('dots');
+    for(let i=0;i<TOTAL;i++){
+      const d = document.createElement('div');
+      d.className = 'dot' + (i===0?' active':'');
+      d.addEventListener('click',()=>goTo(i));
+      dotsEl.appendChild(d);
+    }
+
+    function goTo(idx){
+      if(animating || idx === current) return;
+      animating = true;
+      document.querySelector('.slide.active').classList.remove('active');
+      current = idx;
+      const slides = document.querySelectorAll('.slide');
+      document.getElementById('slides').style.transform = `translateX(-${current * 100}vw)`;
+      slides[current].classList.add('active');
+      updateUI();
+      setTimeout(()=>{ animating=false; }, 950);
+    }
+
+    function updateUI(){
+      document.querySelectorAll('.dot').forEach((d,i)=> d.classList.toggle('active', i===current));
+      document.getElementById('counter').textContent = String(current+1).padStart(2,'0') + ' / 0' + TOTAL;
+      document.getElementById('arrow-prev').classList.toggle('hidden', current===0);
+      document.getElementById('arrow-next').classList.toggle('hidden', current===TOTAL-1);
+      document.getElementById('progress').style.width = ((current+1)/TOTAL*100)+'%';
+    }
+
+    document.getElementById('arrow-prev').addEventListener('click', ()=>goTo(current-1));
+    document.getElementById('arrow-next').addEventListener('click', ()=>goTo(current+1));
+
+    /* ── Keyboard ── */
+    document.addEventListener('keydown', e=>{
+      if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(Math.min(current+1,TOTAL-1));
+      if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(Math.max(current-1,0));
+    });
+
+    /* ── Wheel / swipe ── */
+    let wheelLock = false;
+    document.addEventListener('wheel', e=>{
+      if(wheelLock) return;
+      wheelLock = true;
+      if(e.deltaY > 30 || e.deltaX > 30) goTo(Math.min(current+1,TOTAL-1));
+      if(e.deltaY <-30 || e.deltaX <-30) goTo(Math.max(current-1,0));
+      setTimeout(()=>{ wheelLock=false; }, 1000);
+    });
+
+    let tx=0;
+    document.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; });
+    document.addEventListener('touchend',   e=>{
+      const dx = tx - e.changedTouches[0].clientX;
+      if(dx > 50) goTo(Math.min(current+1,TOTAL-1));
+      if(dx <-50) goTo(Math.max(current-1,0));
+    });
+
+    updateUI();
+  </script>
+
+</body>
+</html>

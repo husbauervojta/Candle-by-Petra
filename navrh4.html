@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Návrh 4 — Candles by Petra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root { --gold:#c9a96e; --dark:#1a1a18; }
+
+    html, body { width:100%; height:100%; overflow:hidden; font-family:'Jost',sans-serif; font-weight:300; }
+
+    body {
+      display:flex; align-items:center; justify-content:center;
+      padding:1.5rem;
+      background-color:#f0d4c4;
+      transition:background-color .4s ease;
+    }
+
+    /* ── ambient outer glow — static element, not animated ── */
+    #ambient {
+      position:fixed; inset:-60px; z-index:0; pointer-events:none;
+      transition:background-color .4s ease;
+      background-color:#f0d4c4;
+      filter:blur(50px) saturate(1.4);
+      transform:translateZ(0);
+    }
+
+    /* ── CARD ── */
+    .card {
+      position:relative; z-index:1;
+      width:100%; max-width:1300px;
+      height:calc(100vh - 3rem);
+      background:rgba(255,255,255,.84);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.75);
+      box-shadow:0 32px 64px rgba(0,0,0,.14);
+      display:flex; flex-direction:column;
+      overflow:hidden;
+      /* GPU layer */
+      transform:translateZ(0);
+      will-change:transform;
+    }
+
+    /* ── static tinted background inside card — NO animation ── */
+    #card-bg {
+      position:absolute; inset:0; z-index:0; pointer-events:none;
+      transition:background-color .4s ease;
+      background-color:#f0d4c4;
+      opacity:.18;
+    }
+
+    /* grain — static, just sits on top */
+    .card::after {
+      content:''; position:absolute; inset:0; z-index:99; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E");
+      opacity:.5;
+    }
+
+    /* ── NAV ── */
+    .card-nav {
+      position:relative; z-index:10; flex-shrink:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.8rem 2.5rem;
+      border-bottom:1px solid rgba(0,0,0,.055);
+    }
+    .nav-logo img { height:50px; width:auto; }
+    .nav-logo-text { font-family:'Cormorant Garamond',serif; font-size:1.1rem; letter-spacing:.06em; color:var(--dark); }
+    .nav-links { display:flex; gap:2.5rem; list-style:none; }
+    .nav-links a { font-size:.67rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(26,26,24,.42); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--dark); }
+
+    /* ── WATERMARK ── */
+    #watermark {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) translateZ(0);
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(4rem,14vw,12rem);
+      font-weight:600; line-height:1;
+      white-space:nowrap; letter-spacing:-.01em;
+      color:rgba(201,169,110,.09);
+      pointer-events:none; z-index:1; user-select:none;
+    }
+
+    /* ── MAIN ── */
+    .card-main {
+      flex:1; min-height:0; position:relative; z-index:2;
+      display:flex; align-items:stretch;
+    }
+
+    /* ── LEFT TEXT ── */
+    .text-col {
+      width:46%; display:flex; flex-direction:column; justify-content:center;
+      padding:1.5rem 1.5rem 1.5rem 3rem; position:relative; z-index:3;
+      /* Only opacity+transform — both GPU-only */
+      transition:opacity .18s ease, transform .18s ease;
+      will-change:opacity,transform;
+    }
+    .text-col.out { opacity:0; transform:translateX(-14px) translateZ(0); }
+
+    .origin-badge {
+      display:inline-flex; align-items:center; gap:.5rem;
+      background:rgba(255,255,255,.65); backdrop-filter:blur(6px);
+      border:1px solid rgba(255,255,255,.8); border-radius:100px;
+      padding:.3rem .85rem .3rem .55rem; margin-bottom:1.4rem; width:fit-content;
+      box-shadow:0 2px 8px rgba(0,0,0,.05),0 1px 0 rgba(255,255,255,.9) inset;
+    }
+    .origin-dot { width:7px; height:7px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+    .origin-label { font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:rgba(26,26,24,.5); }
+
+    .candle-idx { font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:.45rem; }
+
+    .candle-name {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.6rem,4.5vw,4rem); font-weight:400; line-height:1.06;
+      color:var(--dark); margin-bottom:.85rem;
+    }
+    .candle-name em { font-style:italic; }
+
+    .candle-desc { font-size:.86rem; line-height:1.75; color:rgba(26,26,24,.58); max-width:320px; margin-bottom:1.75rem; }
+
+    .price-row { display:flex; align-items:baseline; gap:1.25rem; margin-bottom:1.6rem; }
+    .candle-price { font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--dark); }
+    .candle-scent { font-size:.7rem; letter-spacing:.08em; color:rgba(26,26,24,.38); text-transform:uppercase; }
+
+    .btn-row { display:flex; gap:.7rem; }
+
+    /* skeuomorphic buttons */
+    .btn-pill {
+      display:inline-flex; align-items:center; gap:.55rem;
+      padding:.75rem 1.7rem; border-radius:100px;
+      font-family:'Jost',sans-serif; font-size:.68rem; letter-spacing:.15em; text-transform:uppercase;
+      border:none;
+      /* only transform on interaction — GPU */
+      transition:transform .12s ease, box-shadow .12s ease;
+      will-change:transform;
+    }
+    .btn-pill-dark {
+      background:linear-gradient(160deg,#2c2c2a,#1a1a18);
+      color:#fff;
+      box-shadow:0 5px 16px rgba(0,0,0,.22),0 1px 0 rgba(255,255,255,.09) inset,0 -2px 0 rgba(0,0,0,.18) inset;
+    }
+    .btn-pill-dark:hover  { transform:translateY(-2px) translateZ(0); box-shadow:0 9px 22px rgba(0,0,0,.26),0 1px 0 rgba(255,255,255,.09) inset; }
+    .btn-pill-dark:active { transform:translateY(1px)  translateZ(0); box-shadow:0 2px 8px rgba(0,0,0,.2),0 -3px 5px rgba(0,0,0,.16) inset; }
+
+    .btn-pill-ghost {
+      background:rgba(255,255,255,.5); color:var(--dark);
+      border:1px solid rgba(255,255,255,.8);
+      box-shadow:0 3px 10px rgba(0,0,0,.06),0 1px 0 rgba(255,255,255,.95) inset;
+    }
+    .btn-pill-ghost:hover  { background:rgba(255,255,255,.75); transform:translateY(-2px) translateZ(0); }
+    .btn-pill-ghost:active { transform:translateY(1px) translateZ(0); }
+
+    /* ── RIGHT IMAGE ── */
+    .img-col {
+      width:54%; position:relative; z-index:3;
+      display:flex; align-items:flex-end; justify-content:center;
+      padding-bottom:1rem; overflow:visible;
+    }
+
+    .product-wrap {
+      /* GPU-composited layer — only transform, no filter here */
+      transform:rotate(-5deg) translateX(3%) translateZ(0);
+      transition:transform .35s cubic-bezier(.22,1,.36,1);
+      will-change:transform;
+      height:calc(100% + 50px); margin-top:-50px;
+      display:flex; align-items:flex-end; justify-content:center;
+      filter:drop-shadow(0 30px 40px rgba(0,0,0,.2)) drop-shadow(0 8px 16px rgba(0,0,0,.1));
+    }
+    .product-wrap:hover { transform:rotate(-2deg) translateX(1%) translateZ(0) scale(1.02); }
+
+    #product-img {
+      height:100%; width:auto; max-width:100%;
+      object-fit:contain; display:block;
+      transition:opacity .18s ease;
+      will-change:opacity;
+    }
+
+    /* ── STRIP ── */
+    .card-strip {
+      position:relative; z-index:4;
+      display:flex; gap:1px; height:110px; flex-shrink:0;
+      border-top:1px solid rgba(0,0,0,.055); overflow:hidden;
+    }
+
+    .strip-item {
+      flex:1; position:relative; cursor:pointer; overflow:hidden;
+      /* only flex — cheap */
+      transition:flex .28s cubic-bezier(.22,1,.36,1);
+    }
+    .strip-item.active { flex:2.4; }
+
+    .strip-item img {
+      width:100%; height:100%; object-fit:cover; display:block;
+      /* only filter+transform — GPU */
+      transition:transform .28s ease, filter .28s ease;
+      will-change:transform,filter;
+      filter:brightness(.88) saturate(.65);
+    }
+    .strip-item.active img { filter:brightness(1) saturate(1); }
+    .strip-item:hover img  { transform:scale(1.05) translateZ(0); }
+
+    .strip-item::after {
+      content:''; position:absolute; inset:0; z-index:1;
+      background:rgba(255,255,255,.32);
+      transition:opacity .28s;
+    }
+    .strip-item.active::after { opacity:0; }
+
+    .strip-label {
+      position:absolute; bottom:.55rem; left:0; right:0; z-index:2;
+      text-align:center; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase;
+      color:rgba(255,255,255,.92); text-shadow:0 1px 4px rgba(0,0,0,.4);
+      opacity:0; transition:opacity .2s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      padding:0 .5rem;
+    }
+    .strip-item.active .strip-label,
+    .strip-item:hover .strip-label { opacity:1; }
+
+
+    .demo-tag { position:fixed; top:1.2rem; right:1.8rem; z-index:9999; background:rgba(0,0,0,.1); color:#fff; font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; padding:.3rem .7rem; border-radius:2px; backdrop-filter:blur(6px); }
+  </style>
+</head>
+<body>
+
+  <!-- ambient outer glow -->
+  <div id="ambient"></div>
+
+  <div class="demo-tag">Návrh 4 — neaplikováno</div>
+
+  <div class="card">
+    <div id="card-bg"></div>
+    <div id="watermark">Cherry Kiss</div>
+
+    <!-- NAV -->
+    <div class="card-nav">
+      <ul class="nav-links">
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+      <a class="nav-logo" href="#">
+        <img src="images/logo.jpeg" alt="Candles by Petra"
+             onerror="this.outerHTML='<span class=nav-logo-text>CANDLES BY PETRA</span>'">
+      </a>
+      <ul class="nav-links">
+        <li><a href="#">Story</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- MAIN -->
+    <div class="card-main">
+
+      <div class="text-col" id="text-col">
+        <div class="origin-badge">
+          <div class="origin-dot"></div>
+          <span class="origin-label" id="origin-label">Cherry blossoms · Troodos foothills</span>
+        </div>
+        <p class="candle-idx"    id="candle-idx">04 / 06</p>
+        <h2 class="candle-name"  id="candle-name">Cherry<br><em>Kiss</em></h2>
+        <p class="candle-desc"   id="candle-desc">Spring in the Troodos foothills — the brief moment when cherry trees bloom before the heat arrives. Delicate, fleeting, unforgettable.</p>
+        <div class="price-row">
+          <span class="candle-price" id="candle-price">$18.20</span>
+          <span class="candle-scent" id="candle-scent">Scented Soy Wax · 170g</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-pill btn-pill-dark">
+            Add to Cart
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <button class="btn-pill btn-pill-ghost">Details</button>
+        </div>
+      </div>
+
+      <div class="img-col">
+        <div class="product-wrap">
+          <img id="product-img" src="images/Cherry Kiss-web photo.jpeg" alt="Cherry Kiss"
+               onerror="this.style.cssText='width:240px;height:380px;background:#e8c0b0;display:block;border-radius:6px'">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STRIP -->
+    <div class="card-strip" id="strip"></div>
+  </div>
+
+  <script>
+    const candles = [
+      { img:'images/matcha.jpeg',                short:'Matcha Candle',        name:'Matcha<br><em>Candle</em>',           scent:'Just Green! · Soy Wax · 150g',         desc:'High in the Troodos mountains, morning mist settles over cedar and pine. Cool, green stillness in every burn.',              price:'$15.57', origin:'Tea gardens · Troodos', bg:'#c8e0bc', idx:'01' },
+      { img:'images/Teddy cappuccino.jpeg',      short:'Coffee Soy Candle',    name:'Design Coffee<br><em>Soy Candle</em>', scent:'Teddy Cappuccino · Warm & Roasted',     desc:'The slow Saturday mornings of old Limassol. Sunlight through shutters, the smell of fresh coffee, nowhere to be.',         price:'$19.42', origin:'Morning light · Limassol', bg:'#ecdcc0', idx:'02' },
+      { img:'images/Teddy Berry.jpeg',           short:'Teddy Berry',          name:'Teddy<br><em>Berry</em>',              scent:'Sweet Berry · Design Soya Wax',         desc:'On the wild western tip of Cyprus, where the road ends. Sun-warmed berries, sea breeze, freedom.',                          price:'$19.42', origin:'Wild coast · Akamas', bg:'#ecc4d4', idx:'03' },
+      { img:'images/Cherry Kiss-web photo.jpeg', short:'Cherry Kiss',          name:'Cherry<br><em>Kiss</em>',              scent:'Scented Soy Wax · Floral Topper · 170g', desc:'Spring in the Troodos foothills — cherry trees bloom before the heat arrives. Delicate, fleeting, unforgettable.',          price:'$18.20', origin:'Cherry blossoms · Troodos', bg:'#ecccc4', idx:'04' },
+      { img:'images/levander.jpeg',              short:'Lavender Soy Candle',  name:'Lavender<br><em>Soy Candle</em>',     scent:'Handmade Floral · Calm & Timeless',     desc:'Above Platres village, where the air smells different. Cooler. Purple. The scent of mountains at dusk.',                   price:'$18.20', origin:'Lavender fields · Platres', bg:'#d8d0ec', idx:'05' },
+      { img:'images/citrus bloom.jpeg',          short:'Citrus Bloom Gardenia',name:'Citrus Bloom<br><em>Gardenia</em>',   scent:'Grapefruit · Gardenia · Hand-Poured',   desc:'The plains of Cyprus in early morning, orange trees as far as you can see, white blossoms just opening. Sharp, alive.',    price:'$13.35', origin:'Citrus groves · Mesaoria', bg:'#ece8b8', idx:'06' },
+    ];
+
+    let current = 3;
+
+    /* ── BUILD STRIP ── */
+    const stripEl = document.getElementById('strip');
+    candles.forEach((c, i) => {
+      const el = document.createElement('div');
+      el.className = 'strip-item' + (i === current ? ' active' : '');
+      el.innerHTML = `<img src="${c.img}" alt="${c.short}" onerror="this.style.cssText='width:100%;height:100%;object-fit:cover;display:block;background:${c.bg}'"><span class="strip-label">${c.short}</span>`;
+      el.addEventListener('click', () => goTo(i));
+      stripEl.appendChild(el);
+    });
+
+    /* ── SWITCH ── */
+    let switching = false;
+    function goTo(idx) {
+      if (idx === current) return;
+
+      /* if already switching, allow interrupt — just reset */
+      switching = true;
+      current = idx;
+      const c = candles[idx];
+
+      /* BG colors — cheap CSS transition */
+      document.body.style.backgroundColor   = c.bg;
+      document.getElementById('ambient').style.backgroundColor = c.bg;
+      document.getElementById('card-bg').style.backgroundColor = c.bg;
+
+      /* watermark instant */
+      document.getElementById('watermark').textContent = c.short;
+
+      /* text: fade out */
+      const textCol = document.getElementById('text-col');
+      textCol.classList.add('out');
+
+      /* image: fade out */
+      const img = document.getElementById('product-img');
+      img.style.opacity = '0';
+
+      /* after fade-out (~180ms), swap content */
+      setTimeout(() => {
+        document.getElementById('candle-name').innerHTML    = c.name;
+        document.getElementById('candle-desc').textContent  = c.desc;
+        document.getElementById('candle-price').textContent = c.price;
+        document.getElementById('candle-scent').textContent = c.scent;
+        document.getElementById('origin-label').textContent = c.origin;
+        document.getElementById('candle-idx').textContent   = c.idx + ' / 06';
+        img.src = c.img;
+        img.onerror = () => { img.style.cssText=`width:240px;height:380px;background:${c.bg};display:block;border-radius:6px`; };
+        img.style.opacity = '1';
+        textCol.classList.remove('out');
+
+        /* strip */
+        document.querySelectorAll('.strip-item').forEach((el, i) => el.classList.toggle('active', i === idx));
+        switching = false;
+      }, 180);
+    }
+
+    /* ── INPUT ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(Math.min(current+1, 5));
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(Math.max(current-1, 0));
+    });
+
+    let wLast = 0;
+    document.addEventListener('wheel', e => {
+      const now = Date.now();
+      if (now - wLast < 420) return;
+      wLast = now;
+      if (e.deltaY > 20) goTo(Math.min(current+1, 5));
+      if (e.deltaY < -20) goTo(Math.max(current-1, 0));
+    });
+
+    let tx = 0;
+    document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+    document.addEventListener('touchend',   e => {
+      const dx = tx - e.changedTouches[0].clientX;
+      if (dx > 40) goTo(Math.min(current+1, 5));
+      if (dx < -40) goTo(Math.max(current-1, 0));
+    });
+
+
+    /* init body color */
+    (() => { const c = candles[current]; document.body.style.backgroundColor = c.bg; document.getElementById('ambient').style.backgroundColor = c.bg; document.getElementById('card-bg').style.backgroundColor = c.bg; })();
+  </script>
+</body>
+</html>

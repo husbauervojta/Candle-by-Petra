@@ -84,6 +84,7 @@ function openCart() {
   document.getElementById('cart-overlay').classList.add('active');
   document.getElementById('cart-drawer').classList.add('active');
   document.body.style.overflow = 'hidden';
+  showCartStep();
   renderCart();
 }
 
@@ -91,6 +92,68 @@ function closeCart() {
   document.getElementById('cart-overlay').classList.remove('active');
   document.getElementById('cart-drawer').classList.remove('active');
   document.body.style.overflow = '';
+  showCartStep();
 }
 
-document.addEventListener('DOMContentLoaded', renderCart);
+function showCartStep() {
+  const step1 = document.getElementById('cart-step-1');
+  const step2 = document.getElementById('cart-step-2');
+  if (step1) step1.style.display = 'flex';
+  if (step2) step2.style.display = 'none';
+}
+
+function showCheckoutStep() {
+  const cart = getCart();
+  if (cart.length === 0) return;
+
+  const step1 = document.getElementById('cart-step-1');
+  const step2 = document.getElementById('cart-step-2');
+  if (step1) step1.style.display = 'none';
+  if (step2) {
+    const summary = document.getElementById('checkout-summary');
+    if (summary) {
+      summary.innerHTML = cart.map(i =>
+        `<div class="checkout-summary-row">
+          <span>${i.name} × ${i.qty}</span>
+          <span>$${(i.price * i.qty).toFixed(2)}</span>
+        </div>`
+      ).join('') +
+      `<div class="checkout-summary-total">
+        <span>Total</span>
+        <span>$${getTotal().toFixed(2)}</span>
+      </div>`;
+    }
+    step2.style.display = 'flex';
+  }
+}
+
+function submitOrder(e) {
+  e.preventDefault();
+  const form = document.getElementById('checkout-form');
+  const firstName = form.querySelector('[name="first-name"]').value;
+  const lastName  = form.querySelector('[name="last-name"]').value;
+  const email     = form.querySelector('[name="email"]').value;
+  const phone     = form.querySelector('[name="phone"]').value;
+  const address   = form.querySelector('[name="address"]').value;
+
+  const cart = getCart();
+  const itemsText = cart.map(i => `${i.name} x${i.qty} = $${(i.price * i.qty).toFixed(2)}`).join('\n');
+  const total = '$' + getTotal().toFixed(2);
+
+  const subject = encodeURIComponent(`New Order from ${firstName} ${lastName}`);
+  const body = encodeURIComponent(
+    `Name: ${firstName} ${lastName}\nEmail: ${email}\nPhone: ${phone}\nDelivery address: ${address}\n\nOrder:\n${itemsText}\n\nTotal: ${total}`
+  );
+
+  window.location.href = `mailto:petra@candlesbyPetra.com?subject=${subject}&body=${body}`;
+
+  saveCart([]);
+  closeCart();
+  form.reset();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderCart();
+  const form = document.getElementById('checkout-form');
+  if (form) form.addEventListener('submit', submitOrder);
+});
