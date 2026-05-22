@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop — Candles by Petra</title>
+  <meta name="description" content="Browse our collection of handcrafted luxury candles made in Cyprus.">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="../../index.html">
+      <img src="../../images/logo.jpeg" alt="Candles by Petra">
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../index.html">Home</a></li>
+      <li><a href="shop.html" class="active">Shop</a></li>
+      <li><a href="../about/about.html">About</a></li>
+      <li><a href="../contact/contact.html">Contact</a></li>
+    </ul>
+    <button class="cart-icon-btn" onclick="openCart()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" />
+      </svg>
+      <span class="cart-badge">0</span>
+    </button>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <span class="section-label">The Collection</span>
+    <h1>Our <em>Candles</em></h1>
+    <p>Each scent is a story. Find the one that speaks to you.</p>
+  </div>
+
+  <!-- SHOP GRID -->
+  <section class="shop-section">
+    <div class="shop-grid">
+
+      <div class="product-card" data-name="Matcha Candle" data-price="15.57">
+        <div class="product-image">
+          <img src="../../images/matcha.jpeg" alt="Matcha Candle" onclick="openLightbox(this)">
+          <div class="flame"></div>
+        </div>
+        <p class="product-name">Matcha Candle</p>
+        <p class="product-scent">Just Green!</p>
+        <p class="product-price">$15.57</p>
+        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
+      </div>
+
+      <div class="product-card" data-name="Design Coffee Soy Candle" data-price="19.42">
+        <div class="product-image">
+          <img src="../../images/Teddy cappuccino.jpeg" alt="Design Coffee Soy Candle" onclick="openLightbox(this)">
+          <div class="flame"></div>
+        </div>
+        <p class="product-name">Design Coffee Soy Candle</p>
+        <p class="product-scent">Teddy Cappuccino</p>
+        <p class="product-price">$19.42</p>
+        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
+      </div>
+
+      <div class="product-card" data-name="Teddy Berry" data-price="19.42">
+        <div class="product-image">
+          <img src="../../images/Teddy Berry.jpeg" alt="Teddy Berry" onclick="openLightbox(this)">
+          <div class="flame"></div>
+        </div>
+        <p class="product-name">Teddy Berry</p>
+        <p class="product-scent">Design Soya Wax Candle</p>
+        <p class="product-price">$19.42</p>
+        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
+      </div>
+
+      <div class="product-card" data-name="Cherry Kiss" data-price="18.20">
+        <div class="product-image">
+          <img src="../../images/Cherry Kiss-web photo.jpeg" alt="Cherry Kiss" onclick="openLightbox(this)">
+          <div class="flame"></div>
+        </div>
+        <p class="product-name">Cherry Kiss</p>
+        <p class="product-scent">Scented Soy Wax · Floral Topper · Hand Poured · 170g</p>
+        <p class="product-price">$18.20</p>
+        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
+      </div>
+
+      <div class="product-card" data-name="Lavender Soy Candle" data-price="18.20">
+        <div class="product-image">
+          <img src="../../images/levander.jpeg" alt="Lavender Soy Candle" onclick="openLightbox(this)">
+          <div class="flame"></div>
+        </div>
+        <p class="product-name">Lavender Soy Candle</p>
+        <p class="product-scent">Handmade Floral Candle</p>
+        <p class="product-price">$18.20</p>
+        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
+      </div>
+
+      <div class="product-card" data-name="Citrus Bloom Gardenia" data-price="13.35">
+        <div class="product-image">
+          <img src="../../images/citrus bloom.jpeg" alt="Citrus Bloom Gardenia" onclick="openLightbox(this)">
+          <div class="flame"></div>
+        </div>
+        <p class="product-name">Citrus Bloom Gardenia</p>
+        <p class="product-scent">Grapefruit · Gardenia · Hand-Poured Floral</p>
+        <p class="product-price">$13.35</p>
+        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      <a class="footer-logo" href="../../index.html"><img src="../../images/logo.jpeg" alt="Candles by Petra" style="height:38px;width:auto;"></a>
+      <p>Handcrafted luxury candles made in Limassol, Cyprus. Small batches, natural ingredients, pure intention.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="../about/about.html">About</a></li>
+        <li><a href="../contact/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>Cyprus, Limassol</p>
+      <p>petra@candlesbyPetra.com</p>
+    </div>
+  </footer>
+  <div class="footer-bottom">
+    <span>&copy; 2025 Candles by Petra. All rights reserved.</span>
+    <span>Made with love in Cyprus</span>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div id="cart-overlay" onclick="closeCart()"></div>
+  <div id="cart-drawer">
+    <div class="cart-header">
+      <h3>Your Cart</h3>
+      <button class="cart-header-close" onclick="closeCart()">&times;</button>
+    </div>
+    <div id="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span id="cart-total">$0.00</span>
+      </div>
+      <button class="btn-checkout">Proceed to Checkout</button>
+      <p class="cart-note">Secure payment coming soon — we'll be in touch to confirm your order.</p>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox">
+    <button id="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <script src="../../js/cart.js"></script>
+  <script>
+    function openLightbox(img) {
+      document.getElementById('lightbox-img').src = img.src;
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+
+</body>
+</html>

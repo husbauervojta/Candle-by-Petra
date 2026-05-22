@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Candles by Petra</title>
+  <meta name="description" content="Get in touch with Petra to place an order or ask any questions.">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="../../index.html">
+      <img src="../../images/logo.jpeg" alt="Candles by Petra">
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../index.html">Home</a></li>
+      <li><a href="../shop/shop.html">Shop</a></li>
+      <li><a href="../about/about.html">About</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+    </ul>
+    <button class="cart-icon-btn" onclick="window.location.href='../shop/shop.html'">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" />
+      </svg>
+      <span class="cart-badge" id="contact-badge"></span>
+    </button>
+  </nav>
+
+  <!-- CONTACT SECTION -->
+  <section class="contact-section">
+
+    <!-- LEFT: INFO -->
+    <div class="contact-info">
+      <span class="section-label">Get in touch</span>
+      <h2>Let's talk<br><em>candles</em></h2>
+      <p>
+        Whether you'd like to place an order, ask about a scent, or simply say hello — I'd love to hear from you. I reply to all messages within 24 hours.
+      </p>
+
+      <div class="contact-detail">
+        <p class="contact-detail-label">Location</p>
+        <p class="contact-detail-value">Limassol, Cyprus</p>
+      </div>
+      <div class="contact-detail">
+        <p class="contact-detail-label">Email</p>
+        <p class="contact-detail-value">petra@candlesbyPetra.com</p>
+      </div>
+      <div class="contact-detail">
+        <p class="contact-detail-label">Instagram</p>
+        <p class="contact-detail-value">@candlesbyPetra</p>
+      </div>
+      <div class="contact-detail">
+        <p class="contact-detail-label">Delivery</p>
+        <p class="contact-detail-value">Cyprus & worldwide shipping</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: FORM -->
+    <div class="contact-form-wrap">
+      <h2>Place an order<br>or ask a question</h2>
+
+      <form action="mailto:petra@candlesbyPetra.com" method="post" enctype="text/plain">
+
+        <div class="form-group">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" placeholder="Jane Smith" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="candle">Which candle interests you?</label>
+          <select id="candle" name="candle">
+            <option value="">Select a candle...</option>
+            <option>Mediterranean Bloom — €28</option>
+            <option>Golden Hour — €32</option>
+            <option>Sea Salt & Sage — €26</option>
+            <option>Cypress & Cedar — €30</option>
+            <option>Fig & Lemon Blossom — €28</option>
+            <option>Midnight Oud — €38</option>
+            <option>I have a question / other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Tell me your delivery address, quantity, or any questions..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-dark">Send Message</button>
+
+      </form>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      <a class="footer-logo" href="../../index.html"><img src="../../images/logo.jpeg" alt="Candles by Petra" style="height:38px;width:auto;"></a>
+      <p>Handcrafted luxury candles made in Limassol, Cyprus. Small batches, natural ingredients, pure intention.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="../shop/shop.html">Shop</a></li>
+        <li><a href="../about/about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>Cyprus, Limassol</p>
+      <p>petra@candlesbyPetra.com</p>
+    </div>
+  </footer>
+  <div class="footer-bottom">
+    <span>&copy; 2025 Candles by Petra. All rights reserved.</span>
+    <span>Made with love in Cyprus</span>
+  </div>
+
+  <script>
+    const count = JSON.parse(localStorage.getItem('cbp_cart') || '[]').reduce((s,i) => s + i.qty, 0);
+    const badge = document.getElementById('contact-badge');
+    if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+  </script>
+</body>
+</html>
