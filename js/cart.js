@@ -185,8 +185,8 @@ function showSuccessStep(firstName) {
   step3.innerHTML = `
     <div class="order-success">
       <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-      <h3>Order placed!</h3>
-      <p>Thank you, ${firstName}.<br>Petra will be in touch within 24 hours.</p>
+      <h3>Order confirmed!</h3>
+      <p>Thank you, ${firstName}.<br>Check your email — payment details and order summary are on their way.</p>
       <button class="checkout-submit" onclick="closeCart()" style="margin-top:.5rem">Done</button>
     </div>`;
   document.getElementById('cart-step-1').style.display = 'none';

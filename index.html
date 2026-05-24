@@ -23,7 +23,6 @@
     #ambient {
       position:fixed; inset:-60px; z-index:0; pointer-events:none;
       background-color:#ecccc4;
-      transition:background-color .28s ease;
       filter:blur(50px) saturate(1.4);
       transform:translateZ(0);
     }
@@ -616,8 +615,8 @@
       const c = candles[idx];
 
       document.body.style.backgroundColor = c.bg;
-      document.getElementById('ambient').style.backgroundColor  = c.bg;
       document.getElementById('card-bg').style.backgroundColor  = c.bg;
+      document.getElementById('ambient').style.backgroundColor  = c.bg;
       document.getElementById('watermark').textContent = c.short;
 
       const textCol = document.getElementById('text-col');
