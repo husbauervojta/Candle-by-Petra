@@ -1212,6 +1212,62 @@ footer {
   color: var(--gold);
 }
 
+/* ── HOW TO ORDER ── */
+
+.how-order-section {
+  padding: 6rem 4rem;
+  text-align: center;
+  background: var(--cream);
+}
+
+.how-order-section h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 400;
+  margin: 0.5rem 0 3.5rem;
+}
+
+.how-order-section h2 em { font-style: italic; }
+
+.how-order-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.how-order-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.how-order-num {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #fff;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.how-order-step h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+
+.how-order-step p {
+  font-size: 0.85rem;
+  color: var(--grey);
+  line-height: 1.65;
+  max-width: 220px;
+}
+
 /* ── RESPONSIVE ── */
 
 @media (max-width: 1024px) {
@@ -1239,6 +1295,8 @@ footer {
   .contact-section { grid-template-columns: 1fr; }
   .contact-info { padding: 5rem 2.5rem; }
   .contact-form-wrap { padding: 4rem 2.5rem; }
+  .how-order-section { padding: 5rem 2.5rem; }
+  .how-order-steps { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 600px) {
@@ -1260,4 +1318,7 @@ footer {
   .about-values { padding: 4rem 1.5rem; }
   .contact-info { padding: 4rem 1.5rem; }
   .contact-form-wrap { padding: 3rem 1.5rem; }
+  .how-order-section { padding: 4rem 1.5rem; }
+  .how-order-steps { grid-template-columns: 1fr; gap: 2.5rem; }
+  .how-order-step p { max-width: none; }
 }

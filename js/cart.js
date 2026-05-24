@@ -12,7 +12,7 @@ function loadStock(cb) {
 
 (function injectStyles() {
   const s = document.createElement('style');
-  s.textContent = '#cart-step-3{display:none;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;text-align:center;flex:1}.order-success{display:flex;flex-direction:column;align-items:center;gap:1.1rem}.order-success h3{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.8rem;font-weight:400;color:#1a1a18}.order-success p{color:#7a7a72;font-size:.9rem;line-height:1.6}.cart-max-note{font-size:.78rem;color:#a08060;margin-top:.25rem;line-height:1.4}.cart-max-note a{color:#c9a96e;text-decoration:underline}';
+  s.textContent = '#cart-step-3{display:none;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;text-align:center;flex:1}.order-success{display:flex;flex-direction:column;align-items:center;gap:1.1rem}.order-success h3{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.8rem;font-weight:400;color:#1a1a18}.order-success p{color:#7a7a72;font-size:.9rem;line-height:1.6}.cart-max-note{font-size:.78rem;color:#a08060;margin-top:.25rem;line-height:1.4}.cart-max-note a{color:#c9a96e;text-decoration:underline}.cart-how{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #e8e2d9}.cart-how-title{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#7a7a72;margin-bottom:.7rem}.cart-how-step{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.45rem;font-size:.78rem;color:#7a7a72;line-height:1.45}.cart-how-num{width:17px;height:17px;background:#c9a96e;color:#fff;border-radius:50%;font-size:.6rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}';
   document.head.appendChild(s);
 })();
 
@@ -241,4 +241,17 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCart();
   const form = document.getElementById('checkout-form');
   if (form) form.addEventListener('submit', submitOrder);
+
+  const footer = document.querySelector('.cart-footer');
+  if (footer) {
+    const how = document.createElement('div');
+    how.className = 'cart-how';
+    how.innerHTML =
+      '<p class="cart-how-title">How it works</p>' +
+      '<div class="cart-how-step"><span class="cart-how-num">1</span><span>Place your order</span></div>' +
+      '<div class="cart-how-step"><span class="cart-how-num">2</span><span>Receive payment instructions by email</span></div>' +
+      '<div class="cart-how-step"><span class="cart-how-num">3</span><span>Pay by bank transfer within 5 days</span></div>' +
+      '<div class="cart-how-step"><span class="cart-how-num">4</span><span>Shipping confirmation email when your package is on its way</span></div>';
+    footer.appendChild(how);
+  }
 });
