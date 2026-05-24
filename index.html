@@ -343,6 +343,93 @@
     }
     .checkout-submit:hover { background:var(--dark); }
 
+    /* ── HAMBURGER / MOBILE MENU ── */
+    .nav-hamburger {
+      display:none; background:none; border:none; cursor:pointer;
+      color:rgba(26,26,24,.45); transition:color .2s;
+      align-items:center; justify-content:center;
+      width:36px; height:36px; flex-shrink:0; padding:0;
+    }
+    .nav-hamburger:hover { color:var(--dark); }
+
+    .nav-mobile-menu {
+      display:none; position:fixed; inset:0; z-index:1000;
+      background:rgba(249,245,240,.98);
+      flex-direction:column; align-items:center; justify-content:center;
+      gap:2.5rem;
+    }
+    .nav-mobile-menu.open { display:flex; }
+    .nav-mobile-menu a {
+      font-family:'Cormorant Garamond',serif; font-size:2.2rem;
+      font-weight:400; font-style:italic;
+      color:rgba(26,26,24,.38); text-decoration:none;
+      transition:color .25s;
+    }
+    .nav-mobile-menu a:hover,
+    .nav-mobile-menu a.active { color:var(--dark); }
+    .nav-mobile-close {
+      position:absolute; top:1.5rem; right:1.5rem;
+      background:none; border:none; cursor:pointer;
+      color:rgba(26,26,24,.35); font-size:2rem; line-height:1;
+      transition:color .2s; padding:.25rem;
+    }
+    .nav-mobile-close:hover { color:var(--dark); }
+
+    /* ── MOBILE LAYOUT ── */
+    @media (max-width: 768px) {
+      body { padding:0.4rem; }
+
+      .card { height:calc(100vh - 0.8rem); border-radius:14px; }
+
+      .card-nav { padding:0.55rem 1rem; }
+      .nav-logo img { height:38px; }
+      .nav-links { display:none; }
+      .nav-hamburger { display:flex; }
+
+      #watermark { display:none; }
+
+      .card-main { flex-direction:column; overflow:hidden; }
+
+      .text-col {
+        width:100%; order:2; flex-shrink:0;
+        padding:0.9rem 1.25rem 0.6rem;
+        justify-content:flex-start;
+      }
+      .origin-badge { margin-bottom:0.55rem; }
+      .candle-idx { margin-bottom:0.2rem; }
+      .candle-name { font-size:clamp(1.9rem,7vw,2.6rem); margin-bottom:0.35rem; }
+      .candle-desc {
+        font-size:.8rem; line-height:1.5; margin-bottom:0.7rem;
+        display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+      }
+      .price-row { margin-bottom:0.8rem; }
+      .candle-price { font-size:1.6rem; }
+      .candle-scent { font-size:.62rem; }
+      .btn-row { gap:.5rem; }
+      .btn-pill { padding:.65rem 1.3rem; font-size:.65rem; }
+
+      .img-col {
+        width:100%; order:1;
+        flex:1; min-height:0;
+        padding-bottom:0;
+        overflow:hidden;
+      }
+      .product-wrap {
+        height:100%; margin-top:0;
+        transform:rotate(-4deg) translateX(4%) translateZ(0);
+      }
+
+      .card-strip { height:72px; }
+      .strip-label { display:none; }
+
+      #cart-drawer { width:100%; }
+    }
+
+    @media (max-width: 390px) {
+      .candle-desc { -webkit-line-clamp:1; }
+      .card-strip { height:60px; }
+    }
+
     /* ── LIGHTBOX ── */
     #lightbox {
       display:none; position:fixed; inset:0;
@@ -377,12 +464,26 @@
         <li><a href="pages/about/about.html">About</a></li>
         <li><a href="pages/contact/contact.html">Contact</a></li>
       </ul>
+      <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="0" y1="1" x2="22" y2="1"/><line x1="0" y1="8" x2="22" y2="8"/><line x1="0" y1="15" x2="22" y2="15"/>
+        </svg>
+      </button>
       <button class="cart-btn" onclick="openCart()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"/>
         </svg>
         <span class="cart-badge" id="home-badge"></span>
       </button>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div id="mobile-menu" class="nav-mobile-menu">
+      <button class="nav-mobile-close" onclick="toggleMobileMenu()">&times;</button>
+      <a href="index.html" class="active">Home</a>
+      <a href="pages/shop/shop.html">Shop</a>
+      <a href="pages/about/about.html">About</a>
+      <a href="pages/contact/contact.html">Contact</a>
     </div>
 
     <!-- MAIN -->
@@ -496,6 +597,7 @@
 
     let current = 3; // Cherry Kiss
     function getCurrentCandle() { return current; }
+    function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
 
     /* ── BUILD STRIP ── */
     const stripEl = document.getElementById('strip');

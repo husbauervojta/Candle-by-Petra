@@ -93,6 +93,40 @@ nav {
   color: var(--dark);
 }
 
+/* ── HAMBURGER / MOBILE MENU ── */
+.nav-hamburger {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  color: var(--grey); transition: color .2s;
+  align-items: center; justify-content: center;
+  width: 36px; height: 36px; flex-shrink: 0; padding: 0;
+}
+.nav-hamburger:hover { color: var(--dark); }
+
+.nav-mobile-menu {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(249,245,240,.98);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 2.5rem;
+}
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-menu a {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem; font-weight: 400; font-style: italic;
+  color: rgba(26,26,24,.38); text-decoration: none;
+  transition: color .25s;
+}
+.nav-mobile-menu a:hover,
+.nav-mobile-menu a.active { color: var(--dark); }
+.nav-mobile-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: none; border: none; cursor: pointer;
+  color: rgba(26,26,24,.35); font-size: 2rem; line-height: 1;
+  transition: color .2s; padding: .25rem;
+}
+.nav-mobile-close:hover { color: var(--dark); }
+
 /* ── BUTTONS ── */
 
 .btn {
@@ -1208,8 +1242,10 @@ footer {
 }
 
 @media (max-width: 600px) {
-  nav { padding: 1rem 1.5rem; }
-  .nav-links { gap: 1.5rem; }
+  nav { padding: 0.75rem 1.25rem; }
+  .nav-logo img { height: 42px; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
   .hero-content { padding: 3rem 1.5rem; }
   .featured { padding: 4rem 1.5rem; }
   .products-grid { grid-template-columns: 1fr; }
