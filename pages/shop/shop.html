@@ -112,7 +112,7 @@
   <footer>
     <div class="footer-brand">
       <a class="footer-logo" href="../../index.html"><img src="../../images/logo.jpeg" alt="Candles by Petra" style="height:38px;width:auto;"></a>
-      <p>Handcrafted luxury candles made in Limassol, Cyprus. Small batches, natural ingredients, pure intention.</p>
+      <p>Handcrafted luxury candles made in Larnaca, Cyprus. Small batches, natural ingredients, pure intention.</p>
     </div>
     <div class="footer-col">
       <h4>Navigate</h4>
@@ -125,7 +125,7 @@
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
-      <p>Cyprus, Limassol</p>
+      <p>Cyprus, Larnaca</p>
       <p>petra@candlesbyPetra.com</p>
     </div>
   </footer>
@@ -201,6 +201,15 @@
 
   <script src="../../js/cart.js"></script>
   <script>
+    loadStock(function(stock) {
+      document.querySelectorAll('.product-card').forEach(function(card) {
+        if (stock[card.dataset.name] === 0) {
+          const btn = card.querySelector('.btn-cart');
+          if (btn) { btn.textContent = 'Sold out for now'; btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+        }
+      });
+    });
+
     function openLightbox(img) {
       document.getElementById('lightbox-img').src = img.src;
       document.getElementById('lightbox').classList.add('active');

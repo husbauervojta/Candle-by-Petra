@@ -5,163 +5,427 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Candles by Petra — Handcrafted Luxury Candles, Cyprus</title>
   <meta name="description" content="Handcrafted luxury candles made with love in Cyprus. Natural ingredients, unique scents, pure artisan quality.">
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root { --gold:#c9a96e; --dark:#1a1a18; --border:#e8e2d9; --grey:#7a7a72; --cream:#f9f5f0; --white:#ffffff; }
+
+    html, body { width:100%; height:100%; overflow:hidden; font-family:'Jost',sans-serif; font-weight:300; }
+
+    body {
+      display:flex; align-items:center; justify-content:center;
+      padding:1.5rem;
+      background-color:#ecccc4;
+      transition:background-color .28s ease;
+    }
+
+    /* ambient outer glow */
+    #ambient {
+      position:fixed; inset:-60px; z-index:0; pointer-events:none;
+      background-color:#ecccc4;
+      transition:background-color .28s ease;
+      filter:blur(50px) saturate(1.4);
+      transform:translateZ(0);
+    }
+
+    /* ── CARD ── */
+    .card {
+      position:relative; z-index:1;
+      width:100%; max-width:1300px;
+      height:calc(100vh - 3rem);
+      background:rgba(255,255,255,.84);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.75);
+      box-shadow:0 32px 64px rgba(0,0,0,.14);
+      display:flex; flex-direction:column;
+      overflow:hidden;
+      transform:translateZ(0);
+      will-change:transform;
+    }
+
+    #card-bg {
+      position:absolute; inset:0; z-index:0; pointer-events:none;
+      background-color:#ecccc4;
+      transition:background-color .28s ease;
+      opacity:.18;
+    }
+
+    .card::after {
+      content:''; position:absolute; inset:0; z-index:99; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E");
+      opacity:.5;
+    }
+
+    /* ── NAV ── */
+    .card-nav {
+      position:relative; z-index:10; flex-shrink:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.75rem 2.5rem;
+      border-bottom:1px solid rgba(0,0,0,.055);
+    }
+
+    .nav-logo img { height:52px; width:auto; display:block; }
+
+    .nav-links { display:flex; gap:2.2rem; list-style:none; align-items:center; }
+    .nav-links a {
+      font-size:.67rem; letter-spacing:.18em; text-transform:uppercase;
+      color:rgba(26,26,24,.42); text-decoration:none; transition:color .2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--dark); }
+
+    /* cart icon in nav */
+    .cart-btn {
+      background:none; border:none; cursor:pointer;
+      position:relative; display:flex; align-items:center; justify-content:center;
+      width:38px; height:38px; color:rgba(26,26,24,.45);
+      transition:color .2s; flex-shrink:0;
+    }
+    .cart-btn:hover { color:var(--dark); }
+    .cart-btn svg { width:22px; height:22px; }
+    .cart-badge {
+      position:absolute; top:2px; right:2px;
+      min-width:16px; height:16px; padding:0 3px;
+      background:var(--gold); color:#fff; border-radius:8px;
+      font-size:.58rem; font-weight:400;
+      display:none; align-items:center; justify-content:center;
+    }
+
+    /* ── WATERMARK ── */
+    #watermark {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) translateZ(0);
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(4rem,13vw,11rem);
+      font-weight:600; line-height:1; white-space:nowrap; letter-spacing:-.01em;
+      color:rgba(201,169,110,.09);
+      pointer-events:none; z-index:1; user-select:none;
+    }
+
+    /* ── MAIN ── */
+    .card-main {
+      flex:1; min-height:0; position:relative; z-index:2;
+      display:flex; align-items:stretch;
+    }
+
+    /* ── LEFT TEXT ── */
+    .text-col {
+      width:46%; display:flex; flex-direction:column; justify-content:center;
+      padding:1.5rem 1.5rem 1.5rem 3rem; position:relative; z-index:3;
+      transition:opacity .14s ease, transform .14s ease;
+      will-change:opacity,transform;
+    }
+    .text-col.out { opacity:0; transform:translateX(-14px) translateZ(0); }
+
+    .origin-badge {
+      display:inline-flex; align-items:center; gap:.5rem;
+      background:rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.9); border-radius:100px;
+      padding:.3rem .85rem .3rem .55rem; margin-bottom:1.4rem; width:fit-content;
+      box-shadow:0 2px 8px rgba(0,0,0,.05),0 1px 0 rgba(255,255,255,.9) inset;
+    }
+    .origin-dot { width:7px; height:7px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+    .origin-label { font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:rgba(26,26,24,.5); }
+
+    .candle-idx { font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:.45rem; }
+
+    .candle-name {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.6rem,4.5vw,4rem); font-weight:400; line-height:1.06;
+      color:var(--dark); margin-bottom:.85rem;
+    }
+    .candle-name em { font-style:italic; }
+
+    .candle-desc { font-size:.86rem; line-height:1.75; color:rgba(26,26,24,.58); max-width:320px; margin-bottom:1.75rem; }
+
+    .price-row { display:flex; align-items:baseline; gap:1.25rem; margin-bottom:1.6rem; }
+    .candle-price { font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--dark); }
+    .candle-scent { font-size:.7rem; letter-spacing:.08em; color:rgba(26,26,24,.38); text-transform:uppercase; }
+
+    .btn-row { display:flex; gap:.7rem; align-items:center; }
+
+    .btn-pill {
+      display:inline-flex; align-items:center; gap:.55rem;
+      padding:.75rem 1.7rem; border-radius:100px;
+      font-family:'Jost',sans-serif; font-size:.68rem; letter-spacing:.15em; text-transform:uppercase;
+      border:none; cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease;
+      will-change:transform;
+    }
+    .btn-pill-dark {
+      background:linear-gradient(160deg,#2c2c2a,#1a1a18); color:#fff;
+      box-shadow:0 5px 16px rgba(0,0,0,.22),0 1px 0 rgba(255,255,255,.09) inset,0 -2px 0 rgba(0,0,0,.18) inset;
+    }
+    .btn-pill-dark:hover  { transform:translateY(-2px) translateZ(0); box-shadow:0 9px 22px rgba(0,0,0,.26),0 1px 0 rgba(255,255,255,.09) inset; }
+    .btn-pill-dark:active { transform:translateY(1px)  translateZ(0); box-shadow:0 2px 8px rgba(0,0,0,.2),0 -3px 5px rgba(0,0,0,.16) inset; }
+
+    .btn-pill-ghost {
+      background:rgba(255,255,255,.5); color:var(--dark);
+      border:1px solid rgba(255,255,255,.8);
+      box-shadow:0 3px 10px rgba(0,0,0,.06),0 1px 0 rgba(255,255,255,.95) inset;
+      text-decoration:none;
+    }
+    .btn-pill-ghost:hover  { background:rgba(255,255,255,.75); transform:translateY(-2px) translateZ(0); }
+    .btn-pill-ghost:active { transform:translateY(1px) translateZ(0); }
+
+    /* ── RIGHT IMAGE ── */
+    .img-col {
+      width:54%; position:relative; z-index:3;
+      display:flex; align-items:flex-end; justify-content:center;
+      padding-bottom:1rem; overflow:visible;
+    }
+
+    .product-wrap {
+      transform:rotate(-5deg) translateX(3%) translateZ(0);
+      transition:transform .35s cubic-bezier(.22,1,.36,1);
+      will-change:transform;
+      height:calc(100% + 50px); margin-top:-50px;
+      display:flex; align-items:flex-end; justify-content:center;
+      filter:drop-shadow(0 30px 40px rgba(0,0,0,.2)) drop-shadow(0 8px 16px rgba(0,0,0,.1));
+    }
+    .product-wrap:hover { transform:rotate(-2deg) translateX(1%) translateZ(0) scale(1.02); }
+
+    #product-img {
+      height:100%; width:auto; max-width:100%;
+      object-fit:contain; display:block;
+      transition:opacity .18s ease;
+      will-change:opacity;
+      cursor:zoom-in;
+    }
+
+    /* ── STRIP ── */
+    .card-strip {
+      position:relative; z-index:4;
+      display:flex; gap:1px; height:110px; flex-shrink:0;
+      border-top:1px solid rgba(0,0,0,.055); overflow:hidden;
+    }
+
+    .strip-item {
+      flex:1; position:relative; cursor:pointer; overflow:hidden;
+      transition:flex .28s cubic-bezier(.22,1,.36,1);
+    }
+    .strip-item.active { flex:2.4; }
+
+    .strip-item img {
+      width:100%; height:100%; object-fit:cover; display:block;
+      transition:transform .28s ease, filter .28s ease;
+      will-change:transform,filter;
+      filter:brightness(.88) saturate(.65);
+    }
+    .strip-item.active img { filter:brightness(1) saturate(1); }
+    .strip-item:hover img  { transform:scale(1.05) translateZ(0); }
+
+    .strip-item::after {
+      content:''; position:absolute; inset:0; z-index:1;
+      background:rgba(255,255,255,.32); transition:opacity .28s;
+    }
+    .strip-item.active::after { opacity:0; }
+
+    .strip-label {
+      position:absolute; bottom:.55rem; left:0; right:0; z-index:2;
+      text-align:center; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase;
+      color:rgba(255,255,255,.92); text-shadow:0 1px 4px rgba(0,0,0,.4);
+      opacity:0; transition:opacity .2s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 .5rem;
+    }
+    .strip-item.active .strip-label,
+    .strip-item:hover .strip-label { opacity:1; }
+
+    /* ── CART DRAWER ── */
+    #cart-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.35);
+      z-index:500; opacity:0; pointer-events:none;
+      transition:opacity .3s ease;
+      transform:translateZ(0);
+    }
+    #cart-overlay.active { opacity:1; pointer-events:all; }
+
+    #cart-drawer {
+      position:fixed; top:0; right:0; width:400px; height:100vh;
+      background:#fff; z-index:501;
+      transform:translateX(100%) translateZ(0); transition:transform .35s ease;
+      display:flex; flex-direction:column;
+      box-shadow:-8px 0 32px rgba(0,0,0,.12);
+      will-change:transform;
+    }
+    #cart-drawer.active { transform:translateX(0); }
+
+    #cart-step-1, #cart-step-2 { display:flex; flex-direction:column; flex:1; overflow:hidden; min-height:0; }
+
+    .cart-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2rem; border-bottom:1px solid var(--border); flex-shrink:0;
+    }
+    .cart-header h3 { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:400; }
+    .cart-header-close {
+      background:none; border:none; cursor:pointer;
+      font-size:1.4rem; color:var(--grey); line-height:1; padding:.25rem;
+      transition:color .2s;
+    }
+    .cart-header-close:hover { color:var(--dark); }
+
+    #cart-items { flex:1; overflow-y:auto; padding:1rem 2rem; }
+
+    .cart-empty { color:var(--grey); font-size:.9rem; text-align:center; padding:2rem 0; }
+
+    .cart-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.9rem 0; border-bottom:1px solid var(--border);
+    }
+    .cart-item-name  { font-size:.9rem; margin-bottom:.2rem; }
+    .cart-item-price { font-size:.8rem; color:var(--grey); }
+    .cart-item-controls { display:flex; align-items:center; gap:.5rem; }
+
+    .qty-btn {
+      width:28px; height:28px; border:1px solid var(--border); background:#fff;
+      cursor:pointer; font-size:.95rem; display:flex; align-items:center; justify-content:center;
+      border-radius:2px; transition:background .2s;
+    }
+    .qty-btn:hover { background:var(--cream); }
+    .qty-num { font-size:.85rem; min-width:20px; text-align:center; }
+
+    .cart-remove {
+      background:none; border:none; cursor:pointer; color:var(--grey);
+      font-size:1.1rem; padding:.2rem; transition:color .2s; line-height:1;
+    }
+    .cart-remove:hover { color:var(--dark); }
+
+    .cart-footer { padding:1.5rem 2rem 2rem; border-top:1px solid var(--border); flex-shrink:0; }
+
+    .cart-total-row {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:1.25rem;
+      font-family:'Cormorant Garamond',serif; font-size:1.3rem;
+    }
+    .cart-total-row span:last-child { color:var(--gold); font-weight:500; }
+
+    .btn-checkout {
+      display:block; width:100%; padding:1rem;
+      background:var(--dark); color:#fff;
+      font-family:'Jost',sans-serif; font-size:.75rem; font-weight:400;
+      letter-spacing:.2em; text-transform:uppercase;
+      border:none; cursor:pointer; transition:background .3s; margin-bottom:.75rem;
+    }
+    .btn-checkout:hover { background:var(--gold); }
+
+    .cart-note { font-size:.75rem; color:var(--grey); text-align:center; line-height:1.5; }
+
+    /* checkout step */
+    .checkout-header {
+      display:flex; align-items:center; gap:.75rem;
+      padding:1.5rem 2rem 1rem; border-bottom:1px solid var(--border); flex-shrink:0;
+    }
+    .checkout-back-btn { background:none; border:none; cursor:pointer; color:var(--grey); font-size:1.3rem; transition:color .2s; }
+    .checkout-back-btn:hover { color:var(--dark); }
+    .checkout-header h3 { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:400; }
+
+    .checkout-body { flex:1; overflow-y:auto; padding:1.5rem 2rem; }
+
+    .checkout-summary { background:var(--cream); border:1px solid var(--border); border-radius:4px; padding:1rem 1.25rem; margin-bottom:1.75rem; }
+    .checkout-summary-row { display:flex; justify-content:space-between; font-size:.85rem; color:var(--grey); padding:.2rem 0; }
+    .checkout-summary-total { display:flex; justify-content:space-between; font-family:'Cormorant Garamond',serif; font-size:1.1rem; border-top:1px solid var(--border); margin-top:.6rem; padding-top:.6rem; }
+    .checkout-summary-total span:last-child { color:var(--gold); font-weight:500; }
+
+    .checkout-form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .checkout-field { display:flex; flex-direction:column; gap:.35rem; margin-bottom:1rem; }
+    .checkout-field label { font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--grey); }
+    .checkout-field input, .checkout-field textarea {
+      padding:.65rem .85rem; border:1px solid var(--border); background:#fff;
+      font-family:'Jost',sans-serif; font-size:.9rem; font-weight:300; color:var(--dark);
+      outline:none; transition:border-color .2s; border-radius:2px;
+    }
+    .checkout-field input:focus, .checkout-field textarea:focus { border-color:var(--gold); }
+    .checkout-field textarea { resize:none; height:80px; }
+
+    .checkout-submit {
+      display:block; width:100%; padding:1rem;
+      background:var(--gold); color:#fff;
+      font-family:'Jost',sans-serif; font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
+      border:none; cursor:pointer; transition:background .3s; margin-top:.5rem;
+    }
+    .checkout-submit:hover { background:var(--dark); }
+
+    /* ── LIGHTBOX ── */
+    #lightbox {
+      display:none; position:fixed; inset:0;
+      background:rgba(10,10,8,.9); z-index:600;
+      align-items:center; justify-content:center;
+    }
+    #lightbox.active { display:flex; }
+    #lightbox img { max-height:88vh; max-width:88vw; object-fit:contain; border-radius:3px; }
+    #lightbox-close {
+      position:absolute; top:1.5rem; right:1.5rem;
+      background:none; border:none; color:#fff; font-size:2rem; cursor:pointer; opacity:.7; line-height:1;
+    }
+    #lightbox-close:hover { opacity:1; }
+  </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <a class="nav-logo" href="index.html">
-      <img src="images/logo.jpeg" alt="Candles by Petra">
-    </a>
-    <ul class="nav-links">
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="pages/shop/shop.html">Shop</a></li>
-      <li><a href="pages/about/about.html">About</a></li>
-      <li><a href="pages/contact/contact.html">Contact</a></li>
-    </ul>
-    <button class="cart-icon-btn" onclick="openCart()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" />
-      </svg>
-      <span class="cart-badge">0</span>
-    </button>
-  </nav>
+  <div id="ambient"></div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content">
-      <span class="section-label">Handcrafted in Cyprus</span>
-      <h1 class="hero-title">
-        Light your <em>world</em><br>with intention
-      </h1>
-      <p class="hero-subtitle">
-        Each candle is poured by hand in Limassol, Cyprus — using natural wax, premium fragrance oils and a touch of Mediterranean soul.
-      </p>
-      <a href="pages/shop/shop.html" class="btn btn-dark">Explore the Collection</a>
-    </div>
-    <div class="hero-image">
-      <img src="images/Cherry Kiss-web photo.jpeg" alt="Candles by Petra">
-    </div>
-  </section>
+  <div class="card">
+    <div id="card-bg"></div>
+    <div id="watermark">Cherry Kiss</div>
 
-  <!-- FEATURED PRODUCTS -->
-  <section class="featured">
-    <div class="featured-header">
-      <div>
-        <span class="section-label">Our Bestsellers</span>
-        <h2>Crafted for the senses</h2>
-      </div>
-      <a href="pages/shop/shop.html" class="btn btn-outline">View all</a>
-    </div>
-
-    <div class="products-grid">
-
-      <div class="product-card" data-name="Matcha Candle" data-price="15.57">
-        <div class="product-image">
-          <img src="images/matcha.jpeg" alt="Matcha Candle" onclick="openLightbox(this)">
-          <div class="flame"></div>
-        </div>
-        <p class="product-name">Matcha Candle</p>
-        <p class="product-scent">Just Green!</p>
-        <p class="product-price">$15.57</p>
-        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
-      </div>
-
-      <div class="product-card" data-name="Design Coffee Soy Candle" data-price="19.42">
-        <div class="product-image">
-          <img src="images/Teddy cappuccino.jpeg" alt="Design Coffee Soy Candle" onclick="openLightbox(this)">
-          <div class="flame"></div>
-        </div>
-        <p class="product-name">Design Coffee Soy Candle</p>
-        <p class="product-scent">Teddy Cappuccino</p>
-        <p class="product-price">$19.42</p>
-        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
-      </div>
-
-      <div class="product-card" data-name="Cherry Kiss" data-price="18.20">
-        <div class="product-image">
-          <img src="images/Cherry Kiss-web photo.jpeg" alt="Cherry Kiss Candle" onclick="openLightbox(this)">
-          <div class="flame"></div>
-        </div>
-        <p class="product-name">Cherry Kiss</p>
-        <p class="product-scent">Scented Soy Wax · Floral Topper · 170g</p>
-        <p class="product-price">$18.20</p>
-        <button class="btn-cart" onclick="addToCartFromCard(this)">Add to Cart</button>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ABOUT TEASER -->
-  <section class="about-teaser">
-    <div class="about-teaser-image">
-      <img src="images/levander.jpeg" alt="Candles by Petra">
-    </div>
-    <div class="about-teaser-content">
-      <span class="section-label">The Story</span>
-      <h2>Made with care,<br>poured with love</h2>
-      <p>
-        Every candle begins as an idea — a scent that recalls a summer evening, a walk through cypress trees, or the warmth of the Cypriot sun. I create each one by hand, in small batches, never rushing the process.
-      </p>
-      <a href="pages/about/about.html" class="btn btn-outline">Learn more about me</a>
-    </div>
-  </section>
-
-  <!-- INSTAGRAM -->
-  <section class="instagram">
-    <h2>Follow the journey</h2>
-    <a href="#" class="instagram-handle">@candlesbyPetra</a>
-
-    <div class="instagram-grid">
-      <div class="instagram-item">
-        <img src="images/Teddy Berry.jpeg" alt="">
-      </div>
-      <div class="instagram-item">
-        <img src="images/citrus bloom.jpeg" alt="">
-      </div>
-      <div class="instagram-item">
-        <img src="images/levander2.jpeg" alt="">
-      </div>
-      <div class="instagram-item">
-        <img src="images/Teddy cappuccino2.jpeg" alt="">
-      </div>
-    </div>
-
-    <a href="#" class="btn btn-gold">Follow on Instagram</a>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-brand">
-      <a class="footer-logo" href="index.html"><img src="images/logo.jpeg" alt="Candles by Petra" style="height:38px;width:auto;"></a>
-      <p>Handcrafted luxury candles made in Limassol, Cyprus. Small batches, natural ingredients, pure intention.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Navigate</h4>
-      <ul>
-        <li><a href="index.html">Home</a></li>
+    <!-- NAV -->
+    <div class="card-nav">
+      <a href="index.html">
+        <img class="nav-logo" src="images/logo.jpeg" alt="Candles by Petra" style="height:52px;width:auto;">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
         <li><a href="pages/shop/shop.html">Shop</a></li>
         <li><a href="pages/about/about.html">About</a></li>
         <li><a href="pages/contact/contact.html">Contact</a></li>
       </ul>
+      <button class="cart-btn" onclick="openCart()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"/>
+        </svg>
+        <span class="cart-badge" id="home-badge"></span>
+      </button>
     </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <p>Cyprus, Limassol</p>
-      <p>petra@candlesbyPetra.com</p>
+
+    <!-- MAIN -->
+    <div class="card-main">
+
+      <div class="text-col" id="text-col">
+        <div class="origin-badge">
+          <div class="origin-dot"></div>
+          <span class="origin-label" id="origin-label">Cherry blossoms · Troodos foothills</span>
+        </div>
+        <p class="candle-idx"  id="candle-idx">04 / 06</p>
+        <h2 class="candle-name" id="candle-name">Cherry<br><em>Kiss</em></h2>
+        <p class="candle-desc"  id="candle-desc">Spring in the Troodos foothills — the brief moment when cherry trees bloom before the heat arrives. Delicate, fleeting, unforgettable.</p>
+        <div class="price-row">
+          <span class="candle-price" id="candle-price">$18.20</span>
+          <span class="candle-scent" id="candle-scent">Scented Soy Wax · 170g</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn-pill btn-pill-dark" id="add-btn" onclick="addCurrentToCart()">
+            Add to Cart
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <a class="btn-pill btn-pill-ghost" href="pages/shop/shop.html">View all</a>
+        </div>
+      </div>
+
+      <div class="img-col">
+        <div class="product-wrap">
+          <img id="product-img" src="images/Cherry Kiss-web photo.jpeg" alt="Cherry Kiss"
+               onclick="openLightbox(this)"
+               onerror="this.style.cssText='width:240px;height:380px;background:#e8c0b0;display:block;border-radius:6px'">
+        </div>
+      </div>
+
     </div>
-  </footer>
-  <div class="footer-bottom">
-    <span>&copy; 2025 Candles by Petra. All rights reserved.</span>
-    <span>Made with love in Cyprus</span>
+
+    <!-- STRIP -->
+    <div class="card-strip" id="strip"></div>
   </div>
 
   <!-- CART DRAWER -->
   <div id="cart-overlay" onclick="closeCart()"></div>
   <div id="cart-drawer">
-
-    <!-- STEP 1: Cart items -->
     <div id="cart-step-1">
       <div class="cart-header">
         <h3>Your Cart</h3>
@@ -177,8 +441,6 @@
         <p class="cart-note">Free shipping within Cyprus · Worldwide shipping available</p>
       </div>
     </div>
-
-    <!-- STEP 2: Checkout form -->
     <div id="cart-step-2" style="display:none;">
       <div class="checkout-header">
         <button class="checkout-back-btn" onclick="showCartStep()">&#8592;</button>
@@ -213,7 +475,6 @@
         </form>
       </div>
     </div>
-
   </div>
 
   <!-- LIGHTBOX -->
@@ -224,22 +485,134 @@
 
   <script src="js/cart.js"></script>
   <script>
+    const candles = [
+      { img:'images/matcha.jpeg',                name:'Matcha<br><em>Candle</em>',           short:'Matcha Candle',         price:15.57, priceStr:'$15.57', scent:'Just Green! · Soy Wax · 150g',          desc:'High in the Troodos mountains, morning mist settles over cedar and pine. Cool, green stillness in every burn.',            origin:'Tea gardens · Troodos', bg:'#c8e0bc', idx:'01' },
+      { img:'images/Teddy cappuccino.jpeg',      name:'Design Coffee<br><em>Soy Candle</em>', short:'Design Coffee Soy Candle', price:19.42, priceStr:'$19.42', scent:'Teddy Cappuccino · Warm & Roasted',    desc:'The slow Saturday mornings of old Larnaca. Sunlight through shutters, the smell of fresh coffee, nowhere to be.',       origin:'Morning light · Larnaca', bg:'#ecdcc0', idx:'02' },
+      { img:'images/Teddy Berry.jpeg',           name:'Teddy<br><em>Berry</em>',              short:'Teddy Berry',          price:19.42, priceStr:'$19.42', scent:'Sweet Berry · Design Soya Wax',         desc:'On the wild western tip of Cyprus, where the road ends. Sun-warmed berries, sea breeze, freedom.',                        origin:'Wild coast · Akamas', bg:'#ecc4d4', idx:'03' },
+      { img:'images/Cherry Kiss-web photo.jpeg', name:'Cherry<br><em>Kiss</em>',              short:'Cherry Kiss',          price:18.20, priceStr:'$18.20', scent:'Scented Soy Wax · Floral Topper · 170g', desc:'Spring in the Troodos foothills — cherry trees bloom before the heat arrives. Delicate, fleeting, unforgettable.',        origin:'Cherry blossoms · Troodos', bg:'#ecccc4', idx:'04' },
+      { img:'images/levander.jpeg',              name:'Lavender<br><em>Soy Candle</em>',      short:'Lavender Soy Candle',  price:18.20, priceStr:'$18.20', scent:'Handmade Floral · Calm & Timeless',     desc:'Above Platres village, where the air smells different. Cooler. Purple. The scent of mountains at dusk.',                 origin:'Lavender fields · Platres', bg:'#d8d0ec', idx:'05' },
+      { img:'images/citrus bloom.jpeg',          name:'Citrus Bloom<br><em>Gardenia</em>',    short:'Citrus Bloom Gardenia',price:13.35, priceStr:'$13.35', scent:'Grapefruit · Gardenia · Hand-Poured',   desc:'The plains of Cyprus in early morning, orange trees as far as you can see, white blossoms opening. Sharp, alive.',       origin:'Citrus groves · Mesaoria', bg:'#ece8b8', idx:'06' },
+    ];
+
+    let current = 3; // Cherry Kiss
+    function getCurrentCandle() { return current; }
+
+    /* ── BUILD STRIP ── */
+    const stripEl = document.getElementById('strip');
+    candles.forEach((c, i) => {
+      const el = document.createElement('div');
+      el.className = 'strip-item' + (i === current ? ' active' : '');
+      el.innerHTML = `<img src="${c.img}" alt="${c.short}" onerror="this.style.cssText='width:100%;height:100%;object-fit:cover;display:block;background:${c.bg}'"><span class="strip-label">${c.short}</span>`;
+      el.addEventListener('click', () => goTo(i));
+      stripEl.appendChild(el);
+    });
+
+    /* ── SWITCH ── */
+    function goTo(idx) {
+      if (idx === current) return;
+      current = idx;
+      const c = candles[idx];
+
+      document.body.style.backgroundColor = c.bg;
+      document.getElementById('ambient').style.backgroundColor  = c.bg;
+      document.getElementById('card-bg').style.backgroundColor  = c.bg;
+      document.getElementById('watermark').textContent = c.short;
+
+      const textCol = document.getElementById('text-col');
+      const img     = document.getElementById('product-img');
+      textCol.classList.add('out');
+      img.style.opacity = '0';
+
+      setTimeout(() => {
+        document.getElementById('candle-name').innerHTML    = c.name;
+        document.getElementById('candle-desc').textContent  = c.desc;
+        document.getElementById('candle-price').textContent = c.priceStr;
+        document.getElementById('candle-scent').textContent = c.scent;
+        document.getElementById('origin-label').textContent = c.origin;
+        document.getElementById('candle-idx').textContent   = c.idx + ' / 06';
+        img.src = c.img;
+        img.alt = c.short;
+        img.style.opacity = '1';
+        textCol.classList.remove('out');
+        document.querySelectorAll('.strip-item').forEach((el, i) => el.classList.toggle('active', i === idx));
+        updateSoldOutUI(idx);
+      }, 140);
+    }
+
+    /* ── SOLD OUT UI ── */
+    function updateSoldOutUI(idx) {
+      const addBtn = document.getElementById('add-btn');
+      if (!addBtn) return;
+      const name = candles[idx].short;
+      if (window.stock[name] === 0) {
+        addBtn.innerHTML = 'Sold out for now';
+        addBtn.disabled = true;
+        addBtn.style.opacity = '0.5';
+        addBtn.style.cursor = 'not-allowed';
+      } else {
+        addBtn.innerHTML = 'Add to Cart <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        addBtn.disabled = false;
+        addBtn.style.opacity = '1';
+        addBtn.style.cursor = '';
+      }
+    }
+
+    /* ── ADD CURRENT CANDLE TO CART ── */
+    function addCurrentToCart() {
+      const c = candles[current];
+      const cart = JSON.parse(localStorage.getItem('cbp_cart') || '[]');
+      const existing = cart.find(i => i.name === c.short);
+      const inCart = existing ? existing.qty : 0;
+      if (window.stock[c.short] !== undefined && inCart >= window.stock[c.short]) return;
+      if (existing) { existing.qty++; } else { cart.push({ name: c.short, price: c.price, qty: 1 }); }
+      localStorage.setItem('cbp_cart', JSON.stringify(cart));
+      renderCart();
+      openCart();
+    }
+
+    /* ── KEYBOARD + WHEEL ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(Math.min(current+1, 5));
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(Math.max(current-1, 0));
+    });
+
+    let wLast = 0;
+    document.addEventListener('wheel', e => {
+      const now = Date.now();
+      if (now - wLast < 350) return;
+      wLast = now;
+      if (e.deltaY > 20)  goTo(Math.min(current+1, 5));
+      if (e.deltaY < -20) goTo(Math.max(current-1, 0));
+    });
+
+    let tx = 0;
+    document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+    document.addEventListener('touchend',   e => {
+      const dx = tx - e.changedTouches[0].clientX;
+      if (dx > 40)  goTo(Math.min(current+1, 5));
+      if (dx < -40) goTo(Math.max(current-1, 0));
+    });
+
+    /* ── LIGHTBOX ── */
     function openLightbox(img) {
       document.getElementById('lightbox-img').src = img.src;
       document.getElementById('lightbox').classList.add('active');
-      document.body.style.overflow = 'hidden';
     }
     function closeLightbox() {
       document.getElementById('lightbox').classList.remove('active');
-      document.body.style.overflow = '';
     }
-    document.getElementById('lightbox').addEventListener('click', function(e) {
-      if (e.target === this) closeLightbox();
-    });
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeLightbox();
-    });
-  </script>
+    document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === this) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
+    /* ── INIT ── */
+    (() => {
+      const c = candles[current];
+      document.body.style.backgroundColor = c.bg;
+      document.getElementById('ambient').style.backgroundColor = c.bg;
+      document.getElementById('card-bg').style.backgroundColor = c.bg;
+    })();
+
+    loadStock(() => updateSoldOutUI(current));
+  </script>
 </body>
 </html>
